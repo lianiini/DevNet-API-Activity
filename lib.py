@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, request
 
 lib = Flask(__name__)
-lib.json.sort.keys = False
+lib.json.sort_keys = False
+
 books = [
     {
         "id": 1,
@@ -161,6 +162,12 @@ def borrow_book(book_id):
         return jsonify({
             "error": "Book not found"
         }), 404
+
+    if book["available"] is False:
+        return jsonify({
+            "status": "Book is already borrowed",
+            "book": book
+        }), 409
 
     book["available"] = False
 
