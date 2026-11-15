@@ -97,5 +97,76 @@ def add_book():
         "book": new_book
     }), 201
 
+@lib.route("/books/<int:book_id>", methods=["PUT"])
+def update_book(book_id):
+    book = next(
+        (book for book in books if book["id"] == book_id),
+        None
+    )
+
+    if book is None:
+        return jsonify({
+            "error": "Book not found"
+        }), 404
+
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict) or not data:
+        return jsonify({
+            "error": "A non-empty JSON request body is required"
+        }), 400
+
+    allowed_fields = {"title", "author", "available"}
+
+    if not set(data.keys()).issubset(allowed_fields):
+        return jsonify({
+            "error": "Invalid field in request"
+        }), 400
+
+    if "title" in data:
+        if not isinstance(data["title"], str) or not data["title"].strip():
+            return jsonify({
+                "error": "Title cannot be empty"
+            }), 400
+        book["title"] = data["title"].strip()
+
+    if "author" in data:
+        if not isinstance(data["author"], str) or not data["author"].strip():
+            return jsonify({
+                "error": "Author cannot be empty"
+            }), 400
+        book["author"] = data["author"].strip()
+
+    if "available" in data:
+        if not isinstance(data["available"], bool):
+            return jsonify({
+                "error": "Available must be true or false"
+            }), 400
+        book["available"] = data["available"]
+
+    return jsonify({
+        "message": "Book updated successfully",
+        "book": book
+    }), 200
+
+@lib.route("/books/<int:book_id>/borrow", methods=["POST"])
+def borrow_book(book_id):
+    book = next(
+        (book for book in books if book["id"] == book_id),
+        None
+    )
+
+    if book is None:
+        return jsonify({
+            "error": "Book not found"
+        }), 404
+
+    book["available"] = False
+
+    return jsonify({
+        "status": "Book borrowed successfully",
+        "book": book
+    }), 200
+
 if __name__ == "__main__":
         lib.run(debug=True)
