@@ -40,3 +40,6 @@ def get_books():
             "error": "Internal server error",
             "message": "Unable to retrieve books"
         }), 500
+
+if *name* == "__main__":
+        lib.run(debug=True)
