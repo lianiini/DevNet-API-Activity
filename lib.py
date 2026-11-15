@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 
 lib = Flask(__name__)
+lib.json.sort.keys = False
 books = [
     {
         "id": 1,
